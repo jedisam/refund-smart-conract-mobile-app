@@ -20,7 +20,7 @@ const Navbar = () => {
     <NavContianer className="navbar navbar-dark bg-dark navbar-expand-lg container-par">
       <NavBrand>      
         <Link to="/" className="navbar-brand">
-        Employee Management Admin System
+        Refund by location Admin Panel
         </Link>
       </NavBrand>
       <RightElement className="collpase navbar-collapse">

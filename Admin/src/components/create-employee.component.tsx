@@ -6,21 +6,25 @@ import { IEmployee } from '../typeDefs'
 
 const CreateEmployee = (props: any) => {
   const [employeeName, setEmployeeName] = useState('');
-  const [employeeDob, setEmployeeDob] = useState('');
-  const [employeeGender, setEmployeeGender] = useState('');
-  const [employeeSalary, setEmployeeSalary] = useState(0);
+  const [employeeAddress, setEmployeeAddress] = useState('');
+  const [employeeLatitude, setEmployeeLatitude] = useState('');
+  const [employeeLogntitude, setEmployeeLongtitude] = useState('');
+  const [timeStamp, setTimeStamp] = useState('');
 
   const onChangeUsername = (e: any) => {
     setEmployeeName(e.target.value);
   };
-  const onChangeDob = (e: any) => {
-    setEmployeeDob(e.target.value);
+  const onChangeAddress = (e: any) => {
+    setEmployeeAddress(e.target.value);
   };
-  const onChangeGender = (e: any) => {
-    setEmployeeGender(e.target.value);
+  const onChangeLatitude = (e: any) => {
+    setEmployeeLatitude(e.target.value);
   };
-  const onChangeSalary = (e: any) => {
-    setEmployeeSalary(e.target.value);
+  const onChangeLongtitude = (e: any) => {
+    setEmployeeLongtitude(e.target.value);
+  };
+  const onChangeTimeStamp = (e: any) => {
+    setTimeStamp(e.target.value);
   };
 
   const onSubmitHandler = async (e: any) => {
@@ -28,9 +32,10 @@ const CreateEmployee = (props: any) => {
 
     const newEmployee = {
       name: employeeName,
-      dob: employeeDob,
-      gender: employeeGender,
-      salary: employeeSalary,
+      address: employeeAddress,
+      latitude: employeeLatitude,
+      longtitude: employeeLogntitude,
+      timeStamp
     };
     props.onCreatePressed(newEmployee);
     // window.location.href = '/';
@@ -51,31 +56,41 @@ const CreateEmployee = (props: any) => {
           />
         </div>
         <div className="form-group">
-          <label>Date of Birth: </label>
+          <label>Address: </label>
           <input
             type="text"
             required
             className="form-control"
-            value={employeeDob}
-            onChange={onChangeDob}
+            value={employeeAddress}
+            onChange={onChangeAddress}
           />
         </div>
         <div className="form-group">
-          <label>Gender</label>
+          <label>Latitude Range: </label>
           <input
             type="text"
+            required
             className="form-control"
-            value={employeeGender}
-            onChange={onChangeGender}
+            value={employeeLatitude}
+            onChange={onChangeLatitude}
           />
         </div>
         <div className="form-group">
-          <label>Salary</label>
+          <label>Longtitude Range</label>
           <input
             type="text"
             className="form-control"
-            value={employeeSalary}
-            onChange={onChangeSalary}
+            value={employeeLogntitude}
+            onChange={onChangeLongtitude}
+          />
+        </div>
+        <div className="form-group">
+          <label>Timestamp Range</label>
+          <input
+            type="text"
+            className="form-control"
+            value={timeStamp}
+            onChange={onChangeTimeStamp}
           />
         </div>
 

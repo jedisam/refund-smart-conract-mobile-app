@@ -9,9 +9,10 @@ const Employee = (props: any) => {
   return (
     <tr>
       <td>{props.employee.name}</td>
-      <td>{props.employee.dob}</td>
-      <td>{props.employee.gender}</td>
-      <td>{props.employee.salary}</td>
+      <td>{props.employee.address}</td>
+      <td>{props.employee.latitude}</td>
+      <td>{props.employee.longtitude}</td>
+      <td>{props.employee.timestamp}</td>
       <td>
         <Link to={'/edit/' + props.employee._id} onClick={() => {props.loadEmployee(props.employee._id)}}>edit</Link> |{' '}
         <button
@@ -55,9 +56,11 @@ const EmployeeList = (props: any) => {
         <thead className="thead-light">
           <tr>
             <th>Name</th>
-            <th>Date of Birth</th>
-            <th>Gender</th>
-            <th>Salary</th>
+            <th>Address</th>
+            <th>Latitude Range</th>
+            <th>Longtude Range</th>
+            <th>TimeStamp</th>
+            <th>Condition</th>
           </tr>
         </thead>
         <tbody>{employees()}</tbody>

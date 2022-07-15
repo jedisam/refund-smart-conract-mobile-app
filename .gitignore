@@ -1,7 +1,7 @@
 # OSX
 #
 .DS_Store
-
+Admin/node_modules
 # Xcode
 #
 build/

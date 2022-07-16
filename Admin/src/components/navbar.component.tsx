@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { ethers } from 'ethers';
+import { useState } from 'react';
 
 
 const NavContianer = styled.nav`
@@ -15,7 +17,21 @@ justify-content: end;
 align-items: center;
 `
 
+
 const Navbar = () => {
+  const [isConnected, setIsConnected] = useState(false);
+  async function connect() {
+    if (window.ethereum) {
+      // res[0] for fetching a first wallet
+      window.ethereum
+        .request({ method: "eth_requestAccounts" })
+        .then((res: any) => {
+          console.log(res[0])
+          setIsConnected(true);});
+    } else {
+      alert("install metamask extension!!");
+    }
+  }
   return (
     <NavContianer className="navbar navbar-dark bg-dark navbar-expand-lg container-par">
       <NavBrand>      
@@ -25,6 +41,11 @@ const Navbar = () => {
       </NavBrand>
       <RightElement className="collpase navbar-collapse">
         <ul className="navbar-nav mr-auto">
+          <li className="navbar-item right-display">
+            <Link to="#" onClick={connect} className="nav-link">
+              { isConnected ? 'Connected' : 'Connect' }
+            </Link>
+          </li>
           <li className="navbar-item right-display">
             <Link to="/create" className="nav-link">
               Add Employee

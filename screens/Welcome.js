@@ -9,7 +9,13 @@ import "@ethersproject/shims";
 // Import the ethers library
 import { ethers } from "ethers";
 
-import { PRIVATE_KEY } from "@env";
+// Background fetch
+import * as BackgroundFetch from "expo-background-fetch";
+import * as TaskManager from "expo-task-manager";
+
+const BACKGROUND_FETCH_TASK = "background-fetch";
+
+import { PRIVATE_KEY, RINKEBY_RPC_URL } from "@env";
 
 import {
 	InnerContainer,
@@ -24,9 +30,59 @@ import {
 	Avatar,
 } from "../components/styles";
 
-const Login = () => {
+const Welcome = ({ route, navigation }) => {
+	// Get params from route
+	const { address } = route.params;
 	const [location, setLocation] = useState(null);
 	const [errorMsg, setErrorMsg] = useState(null);
+
+	async function registerBackgroundFetchAsync() {
+		return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+			minimumInterval: 60 * 5 * 60, // 5 hours
+			// stopOnTerminate: false, // android only,
+			// startOnBoot: true, // android only
+		});
+	}
+
+	TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
+		const now = Date.now();
+
+		let { status } = await Location.requestForegroundPermissionsAsync();
+		if (status !== "granted") {
+			setErrorMsg("Permission to access location was denied");
+			return;
+		}
+
+		let location = await Location.getCurrentPositionAsync({});
+		// setLocation(location);
+		// alert(JSON.stringify(location));
+		// console.log(JSON.stringify(location));
+		// location = JSON.stringify(location);
+		// console.log(JSON.stringify(location.coords.latitude));
+		const provider = new ethers.providers.JsonRpcProvider(RINKEBY_RPC_URL);
+		// console.log("The Provider: ", provider);
+		const signer = new ethers.Wallet(PRIVATE_KEY, provider);
+		// console.log("The SIGNER: ", signer);
+		const contract = new ethers.Contract(contractAddress, abi, signer);
+		// console.log("The CONTACT : ", contract);
+
+		const transactionRsponse = await contract.ingestCoordinate(
+			address,
+			parseInt(JSON.stringify(location.coords.latitude)),
+			parseInt(JSON.stringify(location.coords.longitude)),
+			parseInt(new Date(parseInt(JSON.stringify(location.timestamp))).getHours()),
+			{
+				gasLimit: 1000000,
+				nonce: undefined,
+			}
+		);
+		await listenForTransactionMine(transactionRsponse, provider);
+		console.log(transactionRsponse);
+
+		// Be sure to return the successful result type!
+		return BackgroundFetch.BackgroundFetchResult.NewData;
+	});
+
 	function listenForTransactionMine(transactionResponse, provider) {
 		console.log(`Mining ${transactionResponse.hash}`);
 		return new Promise((resolve, reject) => {
@@ -38,29 +94,45 @@ const Login = () => {
 	}
 	useEffect(() => {
 		(async () => {
-			alert(PRIVATE_KEY);
-			let { status } = await Location.requestForegroundPermissionsAsync();
-			if (status !== "granted") {
-				setErrorMsg("Permission to access location was denied");
-				return;
-			}
-
-			let location = await Location.getCurrentPositionAsync({});
-			setLocation(location);
-			alert(JSON.stringify(location));
-			console.log(JSON.stringify(location));
-			const provider = new ethers.providers.JsonRpcProvider(process.env.RINKEBY_RPC_URL);
-			// console.log("The Provider: ", provider);
-			const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-			// console.log("The SIGNER: ", signer);
-			const contract = new ethers.Contract(contractAddress, abi, signer);
-			// console.log("The CONTACT : ", contract);
-			const transactionRsponse = await contract.getEmployees();
-			console.log("THE TXRERS: ", transactionRsponse);
-			await listenForTransactionMine(transactionRsponse, provider);
-			console.log(transactionRsponse);
+			alert("you are all set!");
 		})();
 	}, []);
+
+	const testNow = async () => {
+		console.log("Touched");
+		let { status } = await Location.requestForegroundPermissionsAsync();
+		if (status !== "granted") {
+			setErrorMsg("Permission to access location was denied");
+			return;
+		}
+
+		let location = await Location.getCurrentPositionAsync({});
+		// setLocation(location);
+		// alert(JSON.stringify(location));
+		// console.log(JSON.stringify(location));
+		// location = JSON.stringify(location);
+		// console.log(JSON.stringify(location.coords.latitude));
+		const provider = new ethers.providers.JsonRpcProvider(RINKEBY_RPC_URL);
+		// console.log("The Provider: ", provider);
+		const signer = new ethers.Wallet(PRIVATE_KEY, provider);
+		// console.log("The SIGNER: ", signer);
+		const contract = new ethers.Contract(contractAddress, abi, signer);
+		// console.log("The CONTACT : ", contract);
+
+		const transactionRsponse = await contract.ingestCoordinate(
+			address,
+			parseInt(JSON.stringify(location.coords.latitude)),
+			parseInt(JSON.stringify(location.coords.longitude)),
+			parseInt(new Date(parseInt(JSON.stringify(location.timestamp))).getHours()),
+			{
+				gasLimit: 1000000,
+				nonce: undefined,
+			}
+		);
+		await listenForTransactionMine(transactionRsponse, provider);
+		console.log(transactionRsponse);
+	};
+
 	return (
 		<>
 			<StatusBar style="light" />
@@ -73,8 +145,8 @@ const Login = () => {
 						<Avatar resizeMode="cover" source={require("../assets/img/default.jpg")} />
 
 						<Line />
-						<StyledButton onPress={() => {}}>
-							<ButtonText>Start</ButtonText>
+						<StyledButton onPress={testNow}>
+							<ButtonText>Test Now</ButtonText>
 						</StyledButton>
 					</StyledFormArea>
 				</WelcomeContainer>
@@ -83,4 +155,4 @@ const Login = () => {
 	);
 };
 
-export default Login;
+export default Welcome;

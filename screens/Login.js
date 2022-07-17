@@ -30,6 +30,7 @@ const { brand, darkLight } = Colors;
 
 const Login = ({ navigation }) => {
 	const [hidePassword, setHidePassword] = useState(true);
+	const [address, setAddress] = useState("");
 	return (
 		<KeyboardAvoidingView
 			style={{ flex: 1, flexDirection: "column", justifyContent: "center" }}
@@ -59,8 +60,9 @@ const Login = ({ navigation }) => {
 										onChangeText={handleChange("public_address")}
 										onBlur={handleBlur("public_address")}
 										values={values.public_address}
+										required
 									/>
-									<MyTextInput
+									{/* <MyTextInput
 										label="private Key"
 										icon="lock"
 										placeholder="* * * * * * * *"
@@ -72,11 +74,13 @@ const Login = ({ navigation }) => {
 										isPassword={true}
 										hidePassword={hidePassword}
 										setHidePassword={setHidePassword}
-									/>
+									/> */}
 									{/* <MsgBox>...</MsgBox> */}
 									<StyledButton
 										onPress={() => {
-											navigation.navigate("Welcome");
+											navigation.navigate("Welcome", {
+												address: values.public_address,
+											});
 										}}
 									>
 										<ButtonText>Get Started</ButtonText>

@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { connect } from 'react-redux';
 import { createEmployee } from '../actions/employee'
 import { IEmployee } from '../typeDefs'
+import { ethers } from 'ethers';
+
+import { abi, contractAddress } from '../constants/endPoints';
+
 
 
 const CreateEmployee = (props: any) => {
@@ -9,7 +13,7 @@ const CreateEmployee = (props: any) => {
   const [employeeAddress, setEmployeeAddress] = useState('');
   const [employeeLatitude, setEmployeeLatitude] = useState('');
   const [employeeLogntitude, setEmployeeLongtitude] = useState('');
-  const [timeStamp, setTimeStamp] = useState('');
+  const [distance, setDistance] = useState(0);
 
   const onChangeUsername = (e: any) => {
     setEmployeeName(e.target.value);
@@ -23,22 +27,42 @@ const CreateEmployee = (props: any) => {
   const onChangeLongtitude = (e: any) => {
     setEmployeeLongtitude(e.target.value);
   };
-  const onChangeTimeStamp = (e: any) => {
-    setTimeStamp(e.target.value);
+  const onChangeDistance = (e: any) => {
+    setDistance(e.target.value);
   };
-
+  function listenForTransactionMine(transactionResponse: any, provider: any) {
+    console.log(`Mining ${transactionResponse.hash}`)
+    return new Promise((resolve, reject) => {
+        provider.once(transactionResponse.hash, (transactionReceipt: any) => {
+            console.log(
+                `Completed with ${transactionReceipt.confirmations} confirmations. `
+            )
+            resolve(1)
+        })
+    })
+}
   const onSubmitHandler = async (e: any) => {
-    e.preventDefault();
+    if (typeof window.ethereum !== "undefined") {
+      e.preventDefault();
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      console.log(signer)
+      const contract = new ethers.Contract(contractAddress, abi, signer);
+      const transactionRsponse = await contract.createEmployee(employeeAddress, employeeName, employeeLatitude, employeeLogntitude, distance);
+      await listenForTransactionMine(transactionRsponse, provider)
+      console.log(transactionRsponse)
 
-    const newEmployee = {
-      name: employeeName,
-      address: employeeAddress,
-      latitude: employeeLatitude,
-      longtitude: employeeLogntitude,
-      timeStamp
-    };
-    props.onCreatePressed(newEmployee);
-    // window.location.href = '/';
+      // const newEmployee = {
+      //   name: employeeName,
+      //   address: employeeAddress,
+      //   latitude: employeeLatitude,
+      //   longtitude: employeeLogntitude,
+      //   timeStamp
+      // };
+      // props.onCreatePressed(newEmployee);
+      // window.location.href = '/';
+    }
+   
   };
 
   return (
@@ -85,12 +109,12 @@ const CreateEmployee = (props: any) => {
           />
         </div>
         <div className="form-group">
-          <label>Timestamp Range</label>
+          <label>Allowed Distance</label>
           <input
             type="text"
             className="form-control"
-            value={timeStamp}
-            onChange={onChangeTimeStamp}
+            value={distance}
+            onChange={onChangeDistance}
           />
         </div>
 

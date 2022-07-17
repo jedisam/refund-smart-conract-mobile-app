@@ -28,9 +28,6 @@ import { Octicons, Ionicons } from "@expo/vector-icons";
 // Colors
 const { brand, darkLight } = Colors;
 
-// KeyboardAvoidingView
-import KeyboardAvoidingWrapper from "../components/KeyboardAvoidingWrapper";
-
 const Login = ({ navigation }) => {
 	const [hidePassword, setHidePassword] = useState(true);
 	return (

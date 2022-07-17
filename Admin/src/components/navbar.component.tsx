@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { ethers } from 'ethers';
 import { useState } from 'react';
 
 
@@ -22,12 +21,17 @@ const Navbar = () => {
   const [isConnected, setIsConnected] = useState(false);
   async function connect() {
     if (window.ethereum) {
-      // res[0] for fetching a first wallet
+      try {
+         // res[0] for fetching a first wallet
       window.ethereum
-        .request({ method: "eth_requestAccounts" })
-        .then((res: any) => {
-          console.log(res[0])
-          setIsConnected(true);});
+      .request({ method: "eth_requestAccounts" })
+      .then((res: any) => {
+        console.log(res[0])
+        setIsConnected(true);});
+      } catch (error) {
+        console.log(error)
+      }
+     
     } else {
       alert("install metamask extension!!");
     }
